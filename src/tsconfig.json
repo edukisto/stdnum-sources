@@ -1,0 +1,66 @@
+{
+  // "$schema": "https://json.schemastore.org/tsconfig",
+  "include": [
+    "*.ts"
+  ],
+  "compilerOptions": {
+    "isolatedModules": true,
+    // "importsNotUsedAsValues": "error", // Deprecated
+    // Все пути только в папках пакетов!
+    // "declarationDir": "bin/types",
+    // "noEmit": true,
+    //   // "declarationDir": "./dist/types/",
+    // OK. 3
+    // "module": "NodeNext",
+    // "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "resolveJsonModule": true,
+    // To use ES6 imports in VS Code.
+    "allowJs": true,
+    // allowArbitraryExtensions,allowImportingTsExtensions,
+    // ,,,paths,,
+    // ,,rootDir,rootDirs,typeRoots,types
+    // OK. 19 - 8 = 11
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    // allowSyntheticDefaultImports,,
+    // ,isolatedModules,preserveSymlinks and verbatimModuleSyntax
+    // ?
+    // "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "composite": false,
+    "declaration": true,
+    // Обдумать
+    // "declarationMap": true,
+    "downlevelIteration": true,
+    // "emitDeclarationOnly": false,
+    "newLine": "lf",
+    // "noEmit": false,
+    // "preserveConstEnums": true,
+    "removeComments": true,
+    // "sourceMap": true,
+    // ,,,,,,importHelpers,,,,,,,noEmitHelpers,,,,,,,,
+    // tsBuildInfoFile
+    "target": "ES6",
+    "esModuleInterop": true,
+    // Для Next.js?
+    "skipLibCheck": true
+  }
+  // Language and Environment
+  // Completeness
+  // Emit: importHelpers,  sourceRoot
+  // Interop Constraints OK, but preserveSymlinks
+  // baseUrl is AMD
+  // "allowSyntheticDefaultImports": false
+}

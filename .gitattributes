@@ -1,0 +1,9 @@
+# The default settings for all files.
+# Use `text` if `.gitignore` allows tracking of only text files.
+# Use `text=auto` if `.gitignore` allows tracking of both text and binary files.
+* text=auto eol=lf whitespace=tab-in-indent,tabwidth=2
+
+# Markdown.
+# 4 white spaces are used for indentation.
+# 2 consecutive trailing white spaces indicate a line break.
+*.md diff=markdown whitespace=-blank-at-eol,tab-in-indent,tabwidth=4

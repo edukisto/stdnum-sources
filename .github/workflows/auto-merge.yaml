@@ -1,0 +1,21 @@
+name: Automatically merge a pull request
+on:
+  workflow_call:
+    inputs:
+      pr:
+        required: true
+        type: string
+jobs:
+  auto_merge:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+      - name: Merge the pull request
+        run: |
+          gh pr merge --auto --delete-branch --squash -- "${PR}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ inputs.pr }}

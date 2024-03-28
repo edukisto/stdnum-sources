@@ -1,0 +1,41 @@
+{
+  "name": "@stdnum/isbn-ranges-cli",
+  "version": "0.1.0",
+  "description": "",
+  "keywords": [
+    "ISBN"
+  ],
+  "homepage": "https://github.com/stdnum/stdnum/",
+  "bugs": {
+    "url": "https://github.com/stdnum/stdnum/issues/"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Sergei Karavaev",
+    "url": "https://github.com/edukisto/"
+  },
+  "files": [
+    "bin/**/*.d.ts",
+    "bin/index.js.map"
+  ],
+  "main": "bin/index.js",
+  "bin": {
+    "isbn-ranges-cli": "bin/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stdnum/stdnum.git"
+  },
+  "scripts": {
+    "build": "NODE_OPTIONS=\"--import=./register.js\" webpack --node-env=production --progress",
+    "test": "NODE_OPTIONS=\"--import=./register.js\" webpack configtest",
+    "watch": "NODE_OPTIONS=\"--import=./register.js\" webpack --node-env=development --watch"
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "type": "module",
+  "types": "bin/index.d.ts"
+}

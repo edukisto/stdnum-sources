@@ -1,0 +1,63 @@
+{
+  "name": "@stdnum/stdnum",
+  "version": "0.1.0",
+  "description": "",
+  "keywords": [],
+  "homepage": "https://stdnum.github.io/",
+  "bugs": {
+    "url": "https://github.com/stdnum/stdnum/issues/"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Sergei Karavaev",
+    "url": "https://github.com/edukisto/"
+  },
+  "files": [],
+  "main": "index.js",
+  "browser": "???????",
+  "bin": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stdnum/stdnum.git"
+  },
+  "scripts": {
+    "##########################build": "tsc --build --verbose",
+    "##########################": "npm i --save-dev --workspace=src/cli @commander-js/extra-typings",
+    "lint": "eslint .",
+    "###########test1": "npm test --workspaces",
+    "test": "jest --coverage --no-cache",
+    "###############test": "vitest run --no-cache"
+  },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "fast-xml-parser": "^4.3.6"
+  },
+  "devDependencies": {
+    "@commander-js/extra-typings": "^12.0.1",
+    "@stylistic/eslint-plugin": "^1.7.0",
+    "@types/node": "^20.11.30",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "terser-webpack-plugin": "^5.3.10",
+    "ts-jest": "^29.1.2",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript-eslint": "^7.4.0",
+    "typescript": "^5.4.3",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "private": true,
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "workspaces": [
+    "src/cli",
+    "src/isbn-ranges",
+    "src/isbn-ranges-cli",
+    "src/isbn",
+    "src/web-app"
+  ],
+  "type": "module"
+}

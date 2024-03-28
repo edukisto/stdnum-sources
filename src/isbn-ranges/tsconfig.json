@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "extends": "../tsconfig.json",
+  "include": [
+    "*.ts",
+    "src/**/*.ts",
+    "tests/**/*.ts"
+  ]
+}

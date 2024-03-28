@@ -1,0 +1,78 @@
+name: Update ISBN ranges
+on:
+  schedule:
+    # At 12:30 UTC−12 (`Etc/GMT+12`), or 00:30 `Etc/GMT-12`.
+    - cron: '30 12 * * *'
+  workflow_dispatch:
+jobs:
+  update_isbn_ranges:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.commit_changes.outputs.branch }}
+    env:
+      APP_PATH: src/isbn-ranges
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: npm
+          # Use an LTS version.
+          node-version: '20.11'
+      # Cache?
+      - name: Install dependencies
+        run: npm ci
+      - name: Get the ISBN range message
+        run: |
+          JSON_PATH="$(mktemp "isbn-ranges-XXXXXX.json")"
+          XML_PATH="$(mktemp "isbn-ranges-XXXXXX.xml")"
+          wget -O "${XML_PATH}" "${ISBN_URL}"
+
+          npm run build --workspace=src/isbn-ranges-cli
+          npm i
+
+          npx isbn-ranges-cli convert "${XML_PATH}" "${JSON_PATH}"
+          cp "${JSON_PATH}" "${APP_PATH}/src/isbn-ranges.json"
+          unlink "${JSON_PATH}"
+          unlink "${XML_PATH}"
+          if [[ -z $(git diff "${APP_PATH}/src/isbn-ranges.json") ]]; then
+            exit 1
+          fi
+        env:
+          ISBN_URL: https://www.isbn-international.org/export_rangemessage.xml
+      - id: commit_changes
+        if: ${{ success() }}
+        name: Commit changes
+        run: |
+          BRANCH="bugfix/update-isbn-ranges-$(date -u "+%Y%m%d%H%M%S")"
+          echo "branch=${BRANCH}" >> "${GITHUB_OUTPUT}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "${BRANCH}"
+          git add "${APP_PATH}/src/isbn-ranges.json"
+          git commit -m "fix(isbn-ranges): update ISBN ranges"
+          git push -u origin "${BRANCH}"
+      - name: Create a pull request
+        run: gh pr create --base=main --fill
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # Most events triggered by `GITHUB_TOKEN` won’t create a new workflow run.
+  auto_merge:
+    permissions:
+      contents: write
+    needs: update_isbn_ranges
+    uses: ./.github/workflows/auto-merge.yaml
+    with:
+      pr: ${{ needs.update_isbn_ranges.outputs.branch }}
+  publish:
+    permissions:
+      contents: write
+    needs: auto_merge
+    uses: ./.github/workflows/publish.yaml
+    with:
+      new_version: patch
+      workspace: src/isbn-ranges-cli

@@ -1,0 +1,21 @@
+name: Automatically merge pull requests from Dependabot
+on:
+  pull_request_target:
+jobs:
+  fetch_metadata:
+    permissions:
+      pull-requests: read
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch metadata
+        uses: dependabot/fetch-metadata@v2
+        # with:
+        #   github-token: ${{ secrets.GITHUB_TOKEN }}
+  auto_merge:
+    permissions:
+      contents: write
+    needs: fetch_metadata
+    uses: ./.github/workflows/auto-merge.yaml
+    with:
+      pr: ${{ github.event.pull_request.html_url }}

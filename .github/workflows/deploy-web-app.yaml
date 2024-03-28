@@ -1,0 +1,67 @@
+# See <https://github.com/actions/starter-workflows/blob/main/pages/nextjs.yml>.
+# See <https://nextjs.org/docs/pages/building-your-application/deploying/ci-build-caching#github-actions>.
+name: Deploy the Next.js app to GitHub Pages
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - src/web-app/**
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      APP_PATH: src/web-app
+      # See `distDir` in `next.config.js`.
+      BUILD_DIR: out
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: npm
+          node-version: '20.11'
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        with:
+          static_site_generator: next
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          key: |
+            ${{ runner.os }}-next-${{ hashFiles('package-lock.json') }}-${{ hashFiles('${{ env.APP_PATH }}/next.config.js', '${{ env.APP_PATH }}/src/**/*.css', '${{ env.APP_PATH }}/src/**/*.tsx') }}
+          path: ${{ env.APP_PATH }}/.next/cache/
+          restore-keys: |
+            ${{ runner.os }}-next-${{ hashFiles('package-lock.json') }}-
+      - name: Install dependencies
+        run: npm ci
+      - name: Build the web app with Next.js
+        run: npm run build --workspace="${APP_PATH}"
+      - name: Set file-system permissions
+        run: |
+          find "${APP_PATH}/${BUILD_DIR}/" -type d -exec chmod 0755 {} \;
+          find "${APP_PATH}/${BUILD_DIR}/" -type f -exec chmod 0644 {} \;
+      - name: Pack and upload the artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: github-pages
+          path: ${{ env.APP_PATH }}/${{ env.BUILD_DIR }}/
+  deploy:
+    permissions:
+      id-token: write
+      pages: write
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      # On GitHub, limit which branches can deploy to this environment.
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
