@@ -1,7 +1,7 @@
 'use client';
 
 import {
-  Button,
+  Chip,
   FormControl,
   FormHelperText,
   FormLabel,
@@ -10,14 +10,13 @@ import {
   Radio,
   RadioGroup,
   Sheet,
-  Typography,
 } from '@mui/joy';
 import { CssVarsProvider } from '@mui/joy/styles';
 // import InfoOutlined from '@mui/icons-material/InfoOutlined';
 import { ISBN } from '@stdnum/isbn';
 import type { Separator10 } from '@stdnum/isbn/dist/types/separator_10.js';
 import type { Separator13 } from '@stdnum/isbn/dist/types/separator_13.js';
-import React, { useState, type ChangeEvent } from 'react';
+import React, { useEffect, useState, type ChangeEvent } from 'react';
 
 // function ModeToggle() {
 //   const { mode, setMode } = useColorScheme();
@@ -46,9 +45,7 @@ import React, { useState, type ChangeEvent } from 'react';
 
 function Copyright() {
   return (
-    <Typography paddingTop={6} textAlign="center">
-      <p>© Караваев С. В., 2024</p>
-    </Typography>
+    <p style={{ marginTop: '3em', textAlign: 'center' }}>© Караваев С. В., 2024</p>
   );
 }
 
@@ -75,6 +72,43 @@ function Page(
   const [format, setFormat] = useState(13);
   const [separator, setSeparator] = useState('-');
 
+  useEffect(() => {
+    update();
+  }, [format, originalIsbn, separator]);
+
+  function update() {
+    try {
+      const isbn = new ISBN(originalIsbn);
+      const isValid = isbn.validate();
+      setValid(isValid);
+      if (isValid) {
+        if (format === 10) {
+          if (isbn.length === 13 && isbn.integral.startsWith('979')) {
+            setValid(false);
+            setRemadeIsbn('');
+          }
+          else {
+            setRemadeIsbn(isbn.convertTo10(separator as Separator10));
+          }
+        }
+        else {
+          setRemadeIsbn(isbn.convertTo13(separator as Separator13));
+        }
+      }
+    }
+    catch (event) {
+      setValid(false);
+    }
+  }
+
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    setOriginalIsbn(event.target.value);
+  }
+
+  // function handleClick(event: MouseEvent<HTMLAnchorElement>) {
+  //   update();
+  // }
+
   function handleFormatChange(event: ChangeEvent<HTMLInputElement>) {
     const value = Number(event.target.value);
     if (value === 13 && separator === ' ') {
@@ -84,9 +118,7 @@ function Page(
   }
 
   function handleSeparatorChange(event: ChangeEvent<HTMLInputElement>) {
-    if (!event.target.disabled) {
-      setSeparator(event.target.value);
-    }
+    setSeparator(event.target.value);
   }
 
   return (
@@ -94,31 +126,31 @@ function Page(
       <CssVarsProvider>
         {/* <ModeToggle /> */}
         <Sheet variant="plain">
-
-          <Grid container spacing={1} xsOffset={1}>
+          <Grid container spacing={2} xsOffset={1}>
             <Grid paddingBottom={3} sm={10} xs={10} color="#000000">
               <h1>
                 ISBN
                 {' '}
                 <span style={{ fontWeight: 'normal' }}>🕮</span>
               </h1>
-              <p>Конверсия и валидация</p>
+              <p>Валидация и конверсия</p>
             </Grid>
             <Grid sm={5} xs={10}>
               <FormControl error={!valid}>
                 <FormLabel>Ввод</FormLabel>
                 <Input
-                  onChange={(event) => {
-                    setRemadeIsbn('');
-                    setOriginalIsbn(event.target.value);
-                  }}
+                  defaultValue={originalIsbn}
+                  onChange={handleChange}
                   placeholder="9780393040029"
                   required
-                  value={originalIsbn}
                 />
                 <FormHelperText>
-                  {/* <InfoOutlined /> */}
-                  {/* 10&#x2011; или 13&#xad;&#x2011;значный идентификатор */}
+                  <Chip
+                    color={valid ? 'success' : 'danger'}
+                    variant="outlined"
+                  >
+                    {valid ? 'Валидный' : 'Невалидный'}
+                  </Chip>
                 </FormHelperText>
               </FormControl>
             </Grid>
@@ -126,6 +158,7 @@ function Page(
               <FormControl>
                 <FormLabel>Вывод</FormLabel>
                 <Input
+                  disabled
                   placeholder=""
                   required
                   startDecorator=""
@@ -133,42 +166,20 @@ function Page(
                 />
               </FormControl>
             </Grid>
-            <Grid sm={10} xs={10}>
+            {/* <Grid sm={10} xs={10}>
               <Button
                 fullWidth
-                onClick={() => {
-                  try {
-                    const isbn = new ISBN(originalIsbn);
-
-                    setValid(isbn.validate());
-
-                    if (format === 10) {
-                      if (isbn.length === 13
-                        && isbn.integral.startsWith('979')) {
-                        setValid(false);
-                      }
-                      else {
-                        setRemadeIsbn(isbn.convertTo10(separator as Separator10));
-                      }
-                    }
-                    else {
-                      setRemadeIsbn(isbn.convertTo13(separator as Separator13));
-                    }
-                  }
-                  catch (event) {
-                  }
-                }}
+                onClick={handleClick}
               >
                 Обработать
               </Button>
-            </Grid>
+            </Grid> */}
             <Grid sm={5} xs={10}>
               <FormControl>
-                <FormLabel>Формат</FormLabel>
+                <FormLabel>Формат конверсии</FormLabel>
                 <RadioGroup>
                   <Radio
                     checked={format === 10}
-                    disabled={originalIsbn.startsWith('979')}
                     label="10­‑разрядный"
                     onChange={handleFormatChange}
                     value="10"
@@ -180,6 +191,9 @@ function Page(
                     value="13"
                   />
                 </RadioGroup>
+                <FormHelperText style={{ textAlign: 'justify', textIndent: '2em' }}>
+                  <p>13­‑значные ISBN с префиксом 979 (например, 9791000000008) запрещено конвертировать в 10­‑значный формат.</p>
+                </FormHelperText>
               </FormControl>
               {/* <Switch
                 // slotProps={{
@@ -211,7 +225,6 @@ function Page(
                 <FormLabel>Разделитель элементов</FormLabel>
                 <RadioGroup>
                   <FormControl>
-                    {/* // disabled={!validate} */}
                     <Radio
                       checked={separator === ''}
                       label="Отсутствует"
@@ -227,9 +240,8 @@ function Page(
                   </FormControl>
 
                   <FormControl>
-                    {/* disabled={!validate || format !== 10} */}
                     <Radio
-                      checked={format === 10 && separator === ' '}
+                      checked={separator === ' '}
                       disabled={format === 13}
                       label="Пробел (U+0020)"
                       onChange={handleSeparatorChange}
@@ -246,7 +258,6 @@ function Page(
                   </FormControl>
 
                   <FormControl>
-                    {/* disabled={!validate} */}
                     <Radio
                       checked={separator === '-'}
                       label="Дефис­‑минус (U+002D)"
@@ -267,7 +278,7 @@ function Page(
               </FormControl>
             </Grid>
           </Grid>
-          <Grid sm={12} xs={12}>
+          <Grid sm={10} xs={10}>
             <Copyright />
           </Grid>
         </Sheet>
