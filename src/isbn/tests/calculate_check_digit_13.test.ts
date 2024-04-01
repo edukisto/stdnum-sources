@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { calculateCheckDigit13 } from '../src/calculate_check_digit_13.js';
+import { ISBN } from '../src/isbn.js';
 
 describe('handles 13-digit ISBNs', () => {
   test.each([
@@ -16,6 +16,7 @@ describe('handles 13-digit ISBNs', () => {
     ['9789528988885', '5'], // From ISO 2108:2005.
     ['9999999999994', '4'],
   ])('%s', (value, expected) => {
-    expect(calculateCheckDigit13(value)).toEqual(expected);
+    const isbn = new ISBN(value);
+    expect(isbn.calculate13()).toEqual(expected);
   });
 });

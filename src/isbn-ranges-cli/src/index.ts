@@ -7,14 +7,9 @@ const program = new Command();
 program
   .description('')
   .name('isbn-ranges-cli')
-  // .option('', '', '', '')
-  // .option('-f, --first', 'first', 'default123')
-  // .option('-s, --second <char> [x]', 'second', 'azaza567')
-  // .showHelpAfterError(true)
   .version(pack.version)
 ;
 
-// node main.js convert export_rangemessage.xml
 program
   .command('convert')
   .action((in_path: string, out_path: string) => {
@@ -30,5 +25,4 @@ program
 
 program.parse();
 
-const options = program.opts();
-console.log(options);
+// const options = program.opts();

@@ -1,15 +1,16 @@
 import type { CheckDigit10 } from './check_digit_10.js';
 import type { CheckDigit13 } from './check_digit_13.js';
+import type { Constructor } from './constructor.js';
+import type { Sequential } from './sequential.js';
 
-interface Calculable10 {
+interface Calculable extends Sequential {
   calculate10(): CheckDigit10;
-}
-
-interface Calculable13 {
   calculate13(): CheckDigit13;
 }
 
+type CalculableConstructor = Constructor<Calculable>;
+
 export type {
-  Calculable10,
-  Calculable13,
+  Calculable,
+  CalculableConstructor,
 };

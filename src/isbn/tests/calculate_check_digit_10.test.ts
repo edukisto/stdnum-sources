@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { calculateCheckDigit10 } from '../src/calculate_check_digit_10.js';
+import { ISBN } from '../src/isbn.js';
 
 describe('handles 10-digit ISBNs', () => {
   test.each([
@@ -13,7 +13,7 @@ describe('handles 10-digit ISBNs', () => {
     ['9876543210', '0'],
     ['9999999999', '9'],
   ])('%s', (value, expected) => {
-    // const isbn = new ;
-    expect(calculateCheckDigit10(value)).toEqual(expected);
+    const isbn = new ISBN(value);
+    expect(isbn.calculate10()).toEqual(expected);
   });
 });

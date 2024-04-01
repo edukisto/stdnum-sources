@@ -72,6 +72,9 @@ const config = [
       ...ts.configs.strictTypeChecked[2].rules,
       ...ts.configs.stylisticTypeChecked[1].rules,
       ...ts.configs.stylisticTypeChecked[2].rules,
+      '@typescript-eslint/no-explicit-any': ['error', {
+        ignoreRestArgs: true,
+      }],
     },
   },
 ];
