@@ -1,0 +1,24 @@
+name: Publish a package
+on:
+  workflow_call:
+    inputs:
+      new_version:
+        required: true
+        type: string
+      workspace:
+        required: true
+        type: string
+jobs:
+  publish:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+      - name: Publish the package
+        run: |
+          npm version --sign-git-tag --workspace="${WORKSPACE}" "${NEW_VERSION}"
+        env:
+          NEW_VERSION: ${{ inputs.new_version }}
+          WORKSPACE: ${{ inputs.workspace }}
